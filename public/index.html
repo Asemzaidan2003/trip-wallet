@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0F172A">
+<title>Trip Wallet</title>
+<!-- Apply the saved theme and language before the stylesheet paints, so nothing flashes or jumps. -->
+<script>try { var savedTheme = localStorage.getItem('theme'); if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.dataset.theme = savedTheme;
+  var savedLang = localStorage.getItem('lang') || ((navigator.language || '').toLowerCase().slice(0, 2) === 'ar' ? 'ar' : 'en');
+  if (savedLang === 'ar') { document.documentElement.lang = 'ar'; document.documentElement.dir = 'rtl'; } } catch (e) {}</script>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="module" src="js/main.js"></script>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#home"><img src="icon.svg" alt="" width="28" height="28"><span data-i18n="appName">Trip Wallet</span></a>
+    <nav class="tabs" data-i18n-aria="sections">
+      <a href="#home" data-view="home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg><span data-i18n="home">Home</span></a>
+      <a href="#expenses" data-view="expenses">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span data-i18n="expenses">Expenses</span></a>
+      <button type="button" class="fab" data-add-expense data-i18n-aria="addExpense">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+      <a href="#reports" data-view="reports">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15v3M12 10v8M17 6v12"/></svg><span data-i18n="reports">Reports</span></a>
+      <a href="#settings" data-view="settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg><span data-i18n="settings">Settings</span></a>
+    </nav>
+    <button type="button" class="primary add-btn" data-add-expense>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="addShort">Add</span><span class="wide-only" data-i18n="addWide"> expense</span></button>
+    <button type="button" class="icon-btn lang-btn" id="lang-toggle" data-i18n-aria="switchLanguage"><span data-i18n="otherLanguage">ع</span></button>
+    <button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch theme"></button>
+  </div>
+</header>
+
+<main id="main">
+  <div id="wallet-bar" class="wallet-bar" aria-live="polite"></div>
+  <p id="error" role="alert"></p>
+  <div id="view-home" class="view"></div>
+  <div id="view-expenses" class="view"></div>
+  <div id="view-deposits" class="view"></div>
+  <div id="view-claims" class="view"></div>
+  <div id="view-reports" class="view"></div>
+  <div id="view-settings" class="view"></div>
+</main>
+
+<div id="print-area" aria-hidden="true"></div>
+<datalist id="desc-suggestions"></datalist>
+
+<!-- In every dialog the default (first) submit button is Save, so Enter / "Go" never triggers "add another". -->
+<dialog id="expense-dialog" aria-labelledby="expense-title">
+  <form method="dialog">
+    <h2 id="expense-title" data-i18n="addExpense">Add expense</h2>
+    <div class="row">
+      <label><span data-i18n="subtotal">Subtotal</span> <input name="amount" type="text" inputmode="decimal" autocomplete="off" required autofocus
+        pattern="[0-9]+([.,٫][0-9]{1,3})?" class="amount-input" dir="ltr"></label>
+      <label><span data-i18n="currency">Currency</span> <select name="currency" class="currency-select"></select></label>
+    </div>
+    <div class="row">
+      <label><span data-i18n="tax">Tax</span> <input name="tax" type="text" inputmode="decimal" autocomplete="off"
+        pattern="[0-9]*([.,٫][0-9]{1,3})?" placeholder="0" dir="ltr"></label>
+      <div class="total-box"><span class="label" data-i18n="total">Total</span><output name="total" class="total-out" dir="ltr">—</output></div>
+    </div>
+    <label><span data-i18n="what">What</span> <input name="description" required maxlength="200" autocomplete="off" list="desc-suggestions"></label>
+    <div class="row">
+      <label><span data-i18n="category">Category</span> <select name="categoryId"></select></label>
+      <label><span data-i18n="date">Date</span> <input type="date" name="date" required></label>
+    </div>
+    <label class="rate-field"><span data-i18n="rate">Rate</span> <span class="rate-hint"></span>
+      <input type="text" inputmode="decimal" name="rate" autocomplete="off" dir="ltr">
+    </label>
+    <div class="row">
+      <label><span data-i18n="paidWith">Paid with</span>
+        <select name="paidWith"><option value="cash" data-i18n="cash">Cash</option><option value="card" data-i18n="card">Card</option><option value="other" data-i18n="other">Other</option></select>
+      </label>
+      <label><span data-i18n="countedOn">Counted on</span>
+        <select name="chargedTo"><option value="me" data-i18n="me">Me</option><option value="company" data-i18n="company">Company</option></select>
+      </label>
+    </div>
+    <div class="receipt-field">
+      <span class="label" data-i18n="receipt">Receipt photo</span>
+      <div class="receipt-box">
+        <img alt="" hidden>
+        <label class="button"><span data-i18n="addPhoto">Add photo</span><input type="file" name="receipt" accept="image/*" class="visually-hidden"></label>
+        <a class="receipt-view link" target="_blank" rel="noopener" hidden data-i18n="viewReceipt">View</a>
+        <button type="button" class="link danger" data-remove-receipt hidden data-i18n="remove">Remove</button>
+      </div>
+    </div>
+    <p class="dialog-status good" role="status"></p>
+    <p class="dialog-error" role="alert"></p>
+    <div class="buttons">
+      <button class="primary" value="save" data-i18n="save">Save</button>
+      <button class="secondary" value="again" data-i18n="saveAnother">Save &amp; add another</button>
+      <button type="button" class="link" data-duplicate hidden data-i18n="duplicate">Duplicate</button>
+      <button type="button" value="cancel" formnovalidate data-i18n="cancel">Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="deposit-dialog" aria-labelledby="deposit-title">
+  <form method="dialog">
+    <h2 id="deposit-title" data-i18n="addDeposit">Add per diem deposit</h2>
+    <div class="row">
+      <label><span data-i18n="amount">Amount</span> <input name="amount" type="text" inputmode="decimal" autocomplete="off" required autofocus
+        pattern="[0-9]+([.,٫][0-9]{1,3})?" dir="ltr"></label>
+      <label><span data-i18n="currency">Currency</span> <select name="currency" class="currency-select"></select></label>
+    </div>
+    <label><span data-i18n="date">Date</span> <input type="date" name="date" required></label>
+    <label class="rate-field"><span data-i18n="rate">Rate</span> <span class="rate-hint"></span>
+      <input type="text" inputmode="decimal" name="rate" autocomplete="off" dir="ltr">
+    </label>
+    <p class="dialog-error" role="alert"></p>
+    <div class="buttons">
+      <button class="primary" value="save" data-i18n="save">Save</button>
+      <button type="button" value="cancel" formnovalidate data-i18n="cancel">Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="reimburse-dialog" aria-labelledby="reimburse-title">
+  <form method="dialog">
+    <h2 id="reimburse-title" data-i18n="companyPaidBack">Company paid it back</h2>
+    <p class="muted reimburse-what"></p>
+    <label><span data-i18n="paidBackOn">Date the company paid it</span> <input type="date" name="date" required></label>
+    <p class="dialog-error" role="alert"></p>
+    <div class="buttons">
+      <button class="primary" value="save" data-i18n="depositToWallet">Deposit to wallet</button>
+      <button type="button" value="cancel" formnovalidate data-i18n="cancel">Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirm-dialog" class="confirm">
+  <form method="dialog">
+    <p class="confirm-text"></p>
+    <div class="buttons">
+      <button class="primary" value="ok">OK</button>
+      <button value="cancel" data-i18n="cancel">Cancel</button>
+    </div>
+  </form>
+</dialog>
+</body>
+</html>

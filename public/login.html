@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Trip Wallet</title>
+<script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+  var l = localStorage.getItem('lang') || (navigator.language || '').slice(0, 2); if (l === 'ar') { document.documentElement.lang = 'ar'; document.documentElement.dir = 'rtl'; } } catch (e) {}</script>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<script type="module" src="js/login.js"></script>
+</head>
+<body class="login-page">
+<main>
+  <section class="login-card">
+    <h1 data-t="title">Trip Wallet</h1>
+    <form id="login-form">
+      <label><span data-t="password">Password</span>
+        <input type="password" name="password" autocomplete="current-password" required autofocus></label>
+      <p class="dialog-error" role="alert"></p>
+      <button class="primary" data-t="login">Log in</button>
+    </form>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "Trip Wallet",
+  "short_name": "Trip Wallet",
+  "description": "Track per diem and expenses on a work trip",
+  "start_url": "/#home",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#1E40AF",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

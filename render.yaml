@@ -1,0 +1,27 @@
+# Render "Blueprint": render.com > New > Blueprint, pick this GitHub repo. See "Hosting it online" in README.md.
+services:
+  - type: web
+    name: trip-wallet
+    runtime: node
+    plan: free
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      # The connection string of your hosted PostgreSQL (e.g. from neon.tech). Render asks you for it; it is never stored in git.
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_SSL
+        value: "true"
+      # Your login password for the app (at least 10 characters). Render asks you for it.
+      - key: APP_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      # Only used when the database is brand new: the wallet currency.
+      - key: BASE_CURRENCY
+        value: SAR

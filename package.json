@@ -1,0 +1,21 @@
+{
+  "name": "trip-wallet",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Track per diem deposits and expenses during a work trip",
+  "license": "MIT",
+  "main": "server.js",
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "db:up": "docker compose up -d --wait",
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --watch --env-file-if-exists=.env server.js",
+    "test": "node --env-file-if-exists=.env --test --test-concurrency=1 \"test/*.test.js\""
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "pg": "^8.13.1"
+  }
+}
